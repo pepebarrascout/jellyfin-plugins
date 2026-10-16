@@ -209,17 +209,23 @@ p { margin: .4em 0; }
 }
 .url button:hover { filter: brightness(1.1); }
 .plugin {
-  display: flex; gap: 16px; align-items: center;
+  display: block;
   background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 12px; margin: 10px 0;
+  border-radius: 8px; padding: 0; margin: 10px 0;
   text-decoration: none; color: inherit;
+  overflow: hidden;
 }
 .plugin:hover { border-color: var(--accent); }
-.plugin img {
-  width: 160px; aspect-ratio: 16/9; border-radius: 6px;
+.plugin-header {
+  display: flex; gap: 12px; align-items: center;
+  padding: 12px;
+}
+.plugin-header img {
+  width: 96px; height: 54px; border-radius: 4px;
   flex: 0 0 auto; background: #000; object-fit: cover;
 }
-.plugin h3 { margin: 0 0 .2em; font-size: 1.05em; color: #fff; }
+.plugin-header h3 { margin: 0; font-size: 1.1em; color: #fff; }
+.plugin-body { padding: 0 12px 12px 12px; }
 .plugin p { color: var(--muted); font-size: .93em; margin: .2em 0; }
 .plugin .badges { margin-top: .35em; display: flex; flex-wrap: wrap; gap: 6px; }
 .badge {
@@ -255,8 +261,8 @@ a { color: var(--accent); }
 @media (max-width: 560px) {
   .url { flex-wrap: wrap; }
   .url b { flex-basis: 100%; }
-  .plugin { flex-direction: column; align-items: stretch; }
-  .plugin img { width: 100%; }
+  .plugin-header { gap: 8px; }
+  .plugin-header img { width: 72px; height: 40px; }
 }
 """
 
@@ -307,7 +313,22 @@ def _category_badge(plugin_obj: dict) -> str:
         "Live TV": "TV en vivo",
     }
     cat_es = cat_translations.get(cat, cat)
-    return f'<div class="badges"><span class="badge cat">{_esc(cat_es)}</span></div>'
+    return f'<span class="badge cat">{_esc(cat_es)}</span>'
+
+
+def _compat_badges(plugin_obj: dict) -> str:
+    """Devuelve los badges de compatibilidad Jellyfin 12.x / 10.11
+    basados en TODAS las versiones del plugin (no solo la última)."""
+    versions = plugin_obj.get("versions", [])
+    abis = {v.get("targetAbi", "") for v in versions}
+    has_j12 = any(a.startswith("12.") for a in abis)
+    has_j10 = any(a.startswith("10.") for a in abis)
+    parts = []
+    if has_j12:
+        parts.append('<span class="badge j12">Jellyfin 12.x</span>')
+    if has_j10:
+        parts.append('<span class="badge j10">Jellyfin 10.11</span>')
+    return "".join(parts)
 
 
 def _compat_line(plugin_obj: dict) -> str:
@@ -381,20 +402,32 @@ def build_html(combined: list[dict], manifest_url: str) -> str:
         gh_url = plugin_meta.get("github_url", f"https://github.com/{OWNER}/{repo_key or ''}")
 
         # Layout por card (en orden):
-        #   1. Título (h3)
-        #   2. Descripción (p)
-        #   3. Compatible con Jellyfin X.Y
-        #   4. Etiqueta de categoría (Música, Metadata, etc.)
-        #   5. Enlace al repositorio en GitHub
-        #   6. Únicamente la versión más reciente
+        #   Header (parte superior): imagen + título al lado
+        #   Body:
+        #     1. Descripción (p)
+        #     2. Compatible con Jellyfin X.Y (basado en última versión)
+        #     3. Badges Jellyfin 12.x / 10.11 (de TODAS las versiones)
+        #        + Etiqueta de categoría (Música, Metadata, etc.)
+        #     4. Enlace al repositorio en GitHub
+        #     5. Únicamente la versión más reciente
+        cat_badge = _category_badge(p)
+        compat_badges = _compat_badges(p)
+        badges_html = ""
+        if cat_badge or compat_badges:
+            badges_html = f'<div class="badges">{compat_badges}{cat_badge}</div>'
+
         card = (
             '<a class="plugin" href="' + _esc(gh_url) + '">'
+            # Header: imagen + título al lado
+            '<div class="plugin-header">'
             f'<img src="{_esc(image)}" alt="" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22><rect width=%2216%22 height=%229%22 fill=%22%230b0c0e%22/><text x=%228%22 y=%225%22 font-size=%221%22 fill=%22%239aa0a6%22 text-anchor=%22middle%22>sin logo</text></svg>\'; this.onerror=null;">'
-            "<div>"
             f"<h3>{_esc(title)}</h3>"
+            "</div>"
+            # Body
+            '<div class="plugin-body">'
             f"<p>{_esc(desc)}</p>"
             f"{_compat_line(p)}"
-            f"{_category_badge(p)}"
+            f"{badges_html}"
             f'<span class="gh-link">{_esc(gh_url.replace("https://", ""))}</span>'
             f"{_versions_list(p, max_v=1)}"
             "</div>"
