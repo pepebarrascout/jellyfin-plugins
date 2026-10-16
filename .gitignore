@@ -1,0 +1,13 @@
+# Cache local de Python (no necesario, pero por si se añaden deps)
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# No versionar el .env si alguna vez se usa
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db

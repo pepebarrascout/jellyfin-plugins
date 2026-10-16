@@ -1,0 +1,93 @@
+name: Actualizar manifest combinado
+
+# Se ejecuta:
+#   - Todos los días a las 00:00 UTC (cron)
+#   - Manualmente desde la pestaña Actions (workflow_dispatch)
+#   - Tras cualquier push a main que toque el script build_manifest.py
+#     (para detectar si el cambio rompe el build)
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/build_manifest.py'
+      - '.github/workflows/update-manifest.yml'
+
+# Permisos necesarios para hacer commit+push al mismo repo
+permissions:
+  contents: write
+
+concurrency:
+  group: update-manifest
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          # Usamos el GITHUB_TOKEN automático para tener permisos de push
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          # No requiere dependencias externas; build_manifest.py usa solo stdlib
+          echo "No hay dependencias externas — build_manifest.py usa solo stdlib"
+
+      - name: Construir manifest.json e index.html
+        run: |
+          python3 scripts/build_manifest.py \
+            --output manifest.json \
+            --html index.html
+
+      - name: Detectar cambios
+        id: diff
+        run: |
+          git add manifest.json index.html
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No hay cambios en manifest.json o index.html."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Cambios detectados:"
+            git diff --cached --stat
+          fi
+
+      - name: Commit y push
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M UTC')
+          git commit -m "chore: actualización automática del manifest combinado ($TIMESTAMP)
+
+          Generado por GitHub Actions.
+          Source: scripts/build_manifest.py
+          "
+          git push
+          echo "✓ Push completado."
+
+      - name: Resumen
+        if: always()
+        run: |
+          echo "=== Resumen ==="
+          echo "Cambios: ${{ steps.diff.outputs.changed }}"
+          if [ -f manifest.json ]; then
+            echo "Plugins en manifest.json: $(python3 -c 'import json;print(len(json.load(open("manifest.json"))))')"
+          fi
+          if [ -f index.html ]; then
+            echo "Tamaño index.html: $(wc -c < index.html) bytes"
+          fi

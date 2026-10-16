@@ -1,0 +1,788 @@
+[
+  {
+    "guid": "8a7b6c5d-4e3f-4a2b-9c1d-0e1f2a3b4c5d",
+    "name": "Estadisticas",
+    "description": "Plugin de estadisticas de musica para Jellyfin. Registra reproducciones de audio en una base de datos SQLite propia (sin tocar la BD de Jellyfin) y genera informes Top 50 y Bottom 50 por cancion, artista, album y genero en multiples ventanas temporales. Permite crear listas de reproduccion y programar su publicacion.",
+    "overview": "Estadisticas de musica independientes: Top 50 y Bottom 50 por cancion/artista/album/genero en ventanas de 2 semanas, 1, 3, 6 y 12 meses, y ano anterior. Base de datos SQLite propia. Purga automatica a los 14 meses con archivo historico anual.",
+    "owner": "pepebarrascout",
+    "category": "Music",
+    "imageUrl": "https://raw.githubusercontent.com/pepebarrascout/jellyfin-plugin-estadisticas/main/logo.png",
+    "versions": [
+      {
+        "version": "0.0.0.19",
+        "changelog": "- NEW: Pestaña 'Más votados' que consume un API externo de votos (JSON con campos itemId/score/title/artist). Resuelve cada itemId contra Jellyfin y arma la playlist 'Radio más votados' (top 50).\n- Si faltan canciones para llegar a 50, se rellena con las más escuchadas de la última semana desde la base de datos propia.\n- La playlist se reemplaza in-place (mismo ID) en cada generación.\n- Programación semanal: día y hora configurables.\n- La tabla muestra # / Canción / Artista / Álbum / Votos y NO consulta el API en tiempo real — sólo el resultado de la última generación.\n- URL del API editable por el usuario (cualquier dominio, mientras la estructura JSON sea la misma).",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.19/jellyfin-plugin-estadisticas_0.0.0.19.zip",
+        "checksum": "E981DF898B673FE67E66918AA757E264",
+        "timestamp": "2026-09-27T02:30:00Z"
+      },
+      {
+        "version": "0.0.0.18",
+        "changelog": "- FIXED: DLL con versión correcta. En v0.0.0.17 el DLL tenía versión 0.0.0.16 causando ObjectDisposedException.\n- IMPORTANTE: Borrar carpeta del plugin viejo antes de instalar.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.18/jellyfin-plugin-estadisticas_0.0.0.18.zip",
+        "checksum": "AECB41EA70ECEECC780B724A423F9DBB",
+        "timestamp": "2026-09-13T04:00:00Z"
+      },
+      {
+        "version": "0.0.0.17",
+        "changelog": "- NEW: Script resolve_item_ids.py para llenar album_item_id y artist_item_id.\n- FIXED: Portadas con selector de ventana temporal propio.\n- FIXED: Álbum/artista del período con formato detallado en líneas separadas.\n- FIXED: Collage 25 álbumes, 320px, tooltip con artista.\n- FIXED: Heatmap excluye semana actual, max/min correctos.\n- FIXED: Géneros Musicales barras más anchas.\n- FIXED: Artistas con eje Y dual (plays/songs izq, tiempo der HH:MM:SS).\n- FIXED: Formato fecha dd-MM-yyyy.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.17/jellyfin-plugin-estadisticas_0.0.0.17.zip",
+        "checksum": "C8F6C5EEFEE1645CFBD1BDD8EE9EB45C",
+        "timestamp": "2026-09-13T03:00:00Z"
+      },
+      {
+        "version": "0.0.0.16",
+        "changelog": "- NEW: Logros movido a Gráficos > Retos. Gamificación renombrada a Retos.\n- FIXED: Timeline sin interpolación.\n- FIXED: Heatmap: colores invertidos, cuadros grandes, 7 días completos, max/min display.\n- FIXED: ByHour: colores grupos 6h, tooltip '13:00 hrs'.\n- FIXED: ByDay: tooltip nombre completo.\n- NEW: Treemap→barras horizontal 'Géneros Musicales' + 'Demás Géneros'.\n- NEW: Gráfica Décadas. Lado a lado con Géneros.\n- NEW: Bubble→grouped bar 'Artistas - Descubrimientos' (10 artistas, 3 métricas).\n- NEW: Portadas con API Jellyfin images, 320px, 25 álbumes, tooltips.\n- NEW: album_item_id + artist_item_id en tracks (cache de Jellyfin ItemIds).\n- NEW: Endpoints /Charts/Decades, /Charts/TopAlbums, /Charts/TopArtists.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.16/jellyfin-plugin-estadisticas_0.0.0.16.zip",
+        "checksum": "D14434117BA236FD75E54FB291A27CAE",
+        "timestamp": "2026-09-13T01:00:00Z"
+      },
+      {
+        "version": "0.0.0.15",
+        "changelog": "- CRITICAL FIX: AmbiguousMatchException en /Historical/Years. Atributo [HttpGet] huérfano eliminado.\n- CRITICAL FIX: 'Value must be set' en RefreshYearlyAggregate. Parámetros null ahora usan DBNull.Value.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.15/jellyfin-plugin-estadisticas_0.0.0.15.zip",
+        "checksum": "D6EA664D14F0F182837AF996103DE1F4",
+        "timestamp": "2026-09-12T00:30:00Z"
+      },
+      {
+        "version": "0.0.0.14",
+        "changelog": "- FIXED: Heatmap respeta ventana temporal + escala dinamica de colores.\n- FIXED: Graficos de hora/dia cambiados a barras (mas legibles).\n- FIXED: Tamano de fuente +2 en todos los textos de graficos.\n- FIXED: Boton Actualizar graficos en su propia fila.\n- NEW: Sub-pestaña Portadas: album/artista del mes, collage, descubrimientos.\n- NEW: Sub-pestaña Recap: tarjetas, comparativa trimestral, evolucion de generos.\n- NEW: 4 endpoints /Charts/Recap, /Charts/QuarterCompare, /Charts/GenreEvolution, /Charts/Discoveries.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.14/jellyfin-plugin-estadisticas_0.0.0.14.zip",
+        "checksum": "DDC3C19DFE5CA612DA57B48D91E2C2EE",
+        "timestamp": "2026-09-08T06:30:00Z"
+      },
+      {
+        "version": "0.0.0.13",
+        "changelog": "- NEW: Pestaña 'Gráficos' con 4 sub-pestañas (Estadísticas, Portadas, Recap, Gamificación).\n- NEW: 6 gráficos en Estadísticas usando Chart.js: línea de tiempo, heatmap, radial por hora, radial por día, treemap de géneros, bubble chart de artistas.\n- NEW: Racha de días consecutivos en Gamificación.\n- NEW: 7 endpoints /Charts/* + ChartService.\n- Sub-pestañas Portadas y Recap en v0.0.0.14.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.13/jellyfin-plugin-estadisticas_0.0.0.13.zip",
+        "checksum": "1C413F22ACDB514EB0492449CF84A7F4",
+        "timestamp": "2026-09-08T05:30:00Z"
+      },
+      {
+        "version": "0.0.0.12",
+        "changelog": "- FIXED: Álbumes con el mismo nombre de distintos artistas ya no se mezclan. GROUP BY ahora usa COALESCE(album_artist, track_artists).\n- NEW: Columnas ordenables en Tiempo Total Escuchado + columna #.\n- NEW: Columna # en todas las tablas del histórico.\n- NEW: Columna Género en Top 25 canciones y álbumes del histórico.\n- NEW: Top 25 artistas y géneros del histórico lado a lado.\n- NEW: Comparativa de años con Top 5 de cada categoría.\n- CHANGED: Default de Top/Bottom cambiado a Canciones - Últimas 2 semanas - Año todos.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.12/jellyfin-plugin-estadisticas_0.0.0.12.zip",
+        "checksum": "961A99CDE5A7431E87A86213DF786B66",
+        "timestamp": "2026-09-08T02:00:00Z"
+      },
+      {
+        "version": "0.0.0.11",
+        "changelog": "- NEW: Caché de consultas (QueryCache) con TTL de 1 hora. Resuelve los timeouts en Raspberry Pi.\n- FIXED: Artistas ahora aparecen en canciones y álbumes (fallback a track_artists).\n- FIXED: Álbumes con el mismo nombre de distintos artistas ya no se mezclan.\n- NEW: Columnas Artista y Álbum separadas.\n- FIXED: Total en tiempo total escuchado ahora es histórico real.\n- FIXED: Formato de duración con zero-pad (131h 03m 05s).\n- FIXED: Quitados códigos (2w) etc. de Resumen.\n- FIXED: Regenerar histórico sin purga.\n- FIXED: Alineación de Reproducciones a la derecha en histórico.\n- FIXED: Scripts de importación/reparación con ItemValuesMap.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.11/jellyfin-plugin-estadisticas_0.0.0.11.zip",
+        "checksum": "4B594E779947E82C0FB61FDA93221F9C",
+        "timestamp": "2026-09-08T01:00:00Z"
+      },
+      {
+        "version": "0.0.0.10",
+        "changelog": "- FIXED: Script de importación corregido. Los tipos de ItemValues en Jellyfin 10.11 son: Artist=0, AlbumArtist=1, Genre=2 (antes estaban invertidos). Esto causaba que los artistas y géneros no se importaran.\n- NEW: Script de reparación (scripts/repair_import.py) para usuarios que ya importaron. Re-lee la BD de Jellyfin y popula track_artists/track_genres para las canciones que faltan. También elimina plays duplicadas.\n- NEW: Botón 'Regenerar histórico' en la pestaña Histórico. Fuerza la generación de agregados anuales sin esperar al 1º del mes. Útil después de importar datos.\n- NEW: Endpoint POST /Historical/Regenerate.\n- FIXED: Optimización de la consulta del Resumen. Antes hacía 6 queries separadas para contar plays por ventana; ahora hace 1 sola query con CASE WHEN (6x más rápida en BDs grandes).",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.10/jellyfin-plugin-estadisticas_0.0.0.10.zip",
+        "checksum": "2DD772433639E5E59B3CE2E13CEB947A",
+        "timestamp": "2026-09-07T16:00:00Z"
+      },
+      {
+        "version": "0.0.0.9",
+        "changelog": "- NEW: API pública con endpoints /Public/Stats (JSON) y /Public/Rss (RSS 2.0) para publicar estadísticas en webs externas. Documentación completa en docs/API.md.\n- NEW: Pestaña 'Histórico' con visualización de agregados anuales: top 25 canciones/artistas/géneros/álbumes por año + comparativa lado a lado de todos los años.\n- NEW: Pestaña 'Logros' con 30+ logros y niveles por mes/semestre/año. Insignias con iconos, barras de progreso, y categorías (Volumen, Diversidad, Tiempo, Niveles).\n- NEW: Endpoints /Achievements, /Historical/Years, /Historical/Year/{year}, /Historical/Compare.\n- NEW: AchievementService con cálculo de logros basado en el historial de escucha.\n- NEW: HistoricalArchiveService con métodos de consulta (GetAvailableYears, GetYearSummary, GetYearComparison).",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.9/jellyfin-plugin-estadisticas_0.0.0.9.zip",
+        "checksum": "383BD07661CB9DAD555411CF04F46575",
+        "timestamp": "2026-09-07T11:00:00Z"
+      },
+      {
+        "version": "0.0.0.8",
+        "changelog": "- NEW: Filtro por año de la canción en Top/Bottom manuales y en listas programadas. Permite consultas como 'lo más escuchado de 1982' o 'lo menos escuchado de 1995'.\n- NEW: Tabla 'Tiempo total escuchado' en la pestaña Resumen. Muestra por género el tiempo total aproximado (suma de duraciones) en cada ventana temporal, con columna de total. Formato: 38h 20m 15s.\n- NEW: Endpoints /Years (lista de años disponibles) y /ListeningTime (tiempo total por género x ventana).\n- FIXED: Botón 'Consultar' ahora ocupa su propia fila (clase 'block') para alinearse correctamente con el botón 'Crear playlist' de abajo.\n- UI: Selectors de Dimensión y Ventana temporal ligeramente más pequeños (min-width 10em) para dar espacio al nuevo selector de Año.\n- Schema migration: columna 'year_filter' añadida a scheduled_playlists.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.8/jellyfin-plugin-estadisticas_0.0.0.8.zip",
+        "checksum": "E314F019F8C07B1D26DE771EFF0C47F1",
+        "timestamp": "2026-09-07T10:00:00Z"
+      },
+      {
+        "version": "0.0.0.7",
+        "changelog": "- NEW: Top 25/Bottom 25 ahora son Top 50/Bottom 50 en toda la UI y en las consultas (50 resultados).\n- FIXED: Ventanas temporales corregidas (semanas de domingo a sábado): \"Últimas 2 semanas\" muestra las 2 últimas semanas completas y excluye la semana actual aunque esté en curso (ej.: si hoy es viernes, muestra desde el domingo hace 2 semanas hasta el sábado pasado). \"Último mes\" = mes calendario anterior completo (ej.: 01-Ago a 31-Ago; 28/29/30/31 según el mes). \"Año anterior\" = 01-Ene a 31-Dic del año pasado. \"Últimos 3/6/12 meses\" terminan el último día del mes anterior. Los límites se calculan con la hora del servidor (America/Guatemala, UTC-6).\n- FIXED: Desempate de las menos escuchadas: menos reproducciones totales históricas y luego orden cronológico ascendente por el primer registro de la canción en la base de datos (las más antiguas primero, las más recientes de último).\n- NEW: El encabezado de la segunda columna de la tabla muestra la dimensión consultada (Canciones/Artistas/Álbumes/Géneros) en lugar de \"Nombre\".\n- NEW: UI de Top 50/Bottom 50: el botón Consultar quedó en la misma línea que Dimensión y Ventana temporal; el botón \"Crear playlist con estos resultados\" quedó junto al campo del nombre de la playlist.\n- NEW: Listas programadas: nuevo selector de orden — Descendente (de la más escuchada a la menos escuchada) o Ascendente (de la menos escuchada a la más escuchada). Los empates se resuelven igual que en las menos escuchadas (menos reproducciones históricas, luego cronológico).\n- NEW: Listas programadas: al elegir la dimensión Géneros aparece un selector de género musical (ej.: Top 50 de Rock de los últimos 3 meses). Se quitaron las dimensiones Artistas y Álbumes.\n- CHANGED: Pestaña Debug renombrada a \"Resumen\" (sección \"Información general\"): una sola línea \"Hora del servidor\" (America/Guatemala), se quitó la inyección de datos de prueba y los textos de ayuda (\"Cómo probar el plugin\", etc.).\n- CHANGED: \"Borrar todos los datos\" se movió al final de la página y pide confirmación con el diálogo nativo de Jellyfin.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.7/jellyfin-plugin-estadisticas_0.0.0.7.zip",
+        "checksum": "A8A8B9ECB672BA59F3371172E2BEFD5D",
+        "timestamp": "2026-09-07T04:30:00Z"
+      },
+      {
+        "version": "0.0.0.6",
+        "changelog": "- NEW: UI reescrita con componentes nativos de Jellyfin (emby-select, emby-input, emby-button, paperList, fieldDescription). Eliminado todo el CSS custom; ahora se usa la hoja de estilos propia de Jellyfin.\n- NEW: Selector de hora con <select> y opciones cada 15 minutos (00:00, 00:15, ... 23:45), formateado segun locale del navegador (12h/24h). Patron tomado del plugin jellyfin-smartlists-plugin.\n- NEW: La tarea 'Publicar listas programadas' ahora se ejecuta cada 1 minuto (antes 15). Las playlists sólo se publican en el momento exacto en que llega su programación (ej: lunes 08:00), no cada tick. Granularidad de ~60 segundos.\n- OPTIMIZATION: No se captura position_ms (tiempo real escuchado) para minimizar I/O en Raspberry Pi con almacenamiento USB. El tiempo total escuchado se aproximará en el futuro sumando la duración total de cada canción (ya capturada en tracks.duration_ms).",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.6/jellyfin-plugin-estadisticas_0.0.0.6.zip",
+        "checksum": "85A84B27E1BA74BED2C80138E0ACCF1B",
+        "timestamp": "2026-09-06T03:45:00Z"
+      },
+      {
+        "version": "0.0.0.5",
+        "changelog": "- NEW: Captura del año de la canción (campo ProductionYear de Jellyfin) en la tabla tracks. Reservado para uso futuro (filtrar por año, ej: 'lo más escuchado de 1982').\n- FIXED: Ortografía corregida al español de Guatemala: Álbumes, Géneros, Últimas/Últimos, Reproducción, Día, Miércoles, Sábado, Más, Aún, Todavía, Cómo, sólo, etc.\n- NEW: Formato de fechas en dd-MMM-aaaa (ej: 05-Sep-2026) en toda la UI.\n- NEW: Formato de horas en HH:MM (24h) en la pestaña de listas programadas.\n- Se mantienen en inglés las palabras técnicas: Top 25, Bottom 25, Debug, playlist, tracks, plays.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.5/jellyfin-plugin-estadisticas_0.0.0.5.zip",
+        "checksum": "E544344405034CB6B4D4EC64CFA95E8F",
+        "timestamp": "2026-09-06T03:15:00Z"
+      },
+      {
+        "version": "0.0.0.4",
+        "changelog": "- FIXED: Error 404 al hacer consultas. La URL se construia manualmente con serverAddress + path, lo que fallaba en servidores con reverse proxy. Ahora se usa ApiClient.getUrl() (el mismo patron que el plugin de podcasts).\n- FIXED: Texto 'Ano' cambiado a 'Año' en todas las etiquetas de ventanas temporales y selects.\n- NEW: Logo del plugin actualizado.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.4/jellyfin-plugin-estadisticas_0.0.0.4.zip",
+        "checksum": "5497427C17C2B554C984202D36A48CE3",
+        "timestamp": "2026-09-06T02:45:00Z"
+      },
+      {
+        "version": "0.0.0.3",
+        "changelog": "- FIXED: La UI se quedaba colgada con 'Consultando...' para siempre cuando el servidor devolvia un error no-JSON. Ahora el frontend maneja timeouts (30s), errores HTTP, y respuestas no-JSON con mensajes claros.\n- NEW: Pestana 'Debug' con 3 botones: actualizar estado, inyectar datos de prueba (50 canciones sinteticas + ~1500 reproducciones distribuidas en las 6 ventanas temporales), y borrar todos los datos.\n- NEW: Endpoints /Debug/Status, /Debug/SeedTestData, /Debug/ClearAll para testing sin esperar 2 semanas.\n- NEW: Mensaje 'Sin resultados' mas util cuando una consulta devuelve 0 filas, explicando posibles causas y sugiriendo usar la pestana Debug.\n- NEW: SqliteDb.IsInitialized flag; los endpoints verifican el estado de la BD antes de consultar y devuelven error claro si la BD no se inicializo.\n- Mensaje de error mejorado en CreatePlaylist cuando no hay resultados.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.3/jellyfin-plugin-estadisticas_0.0.0.3.zip",
+        "checksum": "6A5EBC5B79CBD64D3AAD2E11373B428F",
+        "timestamp": "2026-09-06T02:30:00Z"
+      },
+      {
+        "version": "0.0.0.2",
+        "changelog": "- FIXED: SQLite syntax error 'near limit' que impedia iniciar Jellyfin. La columna 'limit' de la tabla scheduled_playlists era una palabra reservada de SQL; renombrada a 'playlist_limit'.\n- FIXED: Si la inicializacion de la BD SQLite falla, el plugin se desactiva gracefulmente en lugar de tirar el servidor. Jellyfin ahora arranca aunque el plugin tenga errores.\n- Compatible con Jellyfin 10.11.0+",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.2/jellyfin-plugin-estadisticas_0.0.0.2.zip",
+        "checksum": "650EC180342D8685DD130899E57FFECE",
+        "timestamp": "2026-09-06T01:30:00Z"
+      },
+      {
+        "version": "0.0.0.1",
+        "changelog": "- Initial release v0.0.0.1 (Alpha) — BROKEN: SQLite syntax error on startup. Use v0.0.0.2 or later.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas/releases/download/v0.0.0.1/jellyfin-plugin-estadisticas_0.0.0.1.zip",
+        "checksum": "CFC8D17218C00BB218ECEDADDE576068",
+        "timestamp": "2026-09-06T00:00:00Z"
+      }
+    ]
+  },
+  {
+    "guid": "f3c07757-5b42-442e-a37a-f49355b6a7c0",
+    "name": "Jellyfin Last.fm Plugin",
+    "description": "Scrobble your music to Last.fm, update now playing status, and love/ban tracks directly from Jellyfin.",
+    "overview": "Integrates Jellyfin with Last.fm for automatic scrobbling, now playing notifications, and track management (love/ban).",
+    "owner": "pepebarrascout",
+    "category": "Music",
+    "imageUrl": "https://raw.githubusercontent.com/pepebarrascout/jellyfin-plugin-lastfm/main/logo.png",
+    "versions": [
+      {
+        "version": "1.0.8.0",
+        "changelog": "- Updated for Jellyfin 12.1 compatibility (net10.0, Jellyfin.Controller/Model 12.1.*)\n- No API changes; recompiled against Jellyfin 12.1 packages",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm/releases/download/v1.0.8.0/jellyfin-plugin-lastfm_1.0.8.0.zip",
+        "checksum": "fc5175489bee116191f63f4434c387c1",
+        "timestamp": "2026-09-17T12:00:00Z"
+      },
+      {
+        "version": "1.0.7.0",
+        "changelog": "- Fix: Scrobble timestamp no longer jumps to the future when seeking forward\n- PlaybackStopped now uses tracker start time directly instead of recalculating",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm/releases/download/v1.0.7.0/jellyfin-plugin-lastfm_1.0.7.0.zip",
+        "checksum": "b49a6cdb324dc859ac1d49840a349805",
+        "timestamp": "2026-04-15T16:00:00Z"
+      },
+      {
+        "version": "1.0.6.2",
+        "changelog": "- Fix: Scrobble replaced when changing tracks in Feishin/Amafy\n- PlaybackStopped no longer sends duplicate scrobble if tracker already handled\n- Consistent scrobble timestamps using recorded start time",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm/releases/download/v1.0.6.2/jellyfin-plugin-lastfm_1.0.6.2.zip",
+        "checksum": "8f326ac49b3ab65dd9e035b6c2e07d57",
+        "timestamp": "2026-04-15T14:00:00Z"
+      },
+      {
+        "version": "1.0.6.1",
+        "changelog": "- Fix: Scrobble lost on track change with Feishin",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm/releases/download/v1.0.6.1/jellyfin-plugin-lastfm_1.0.6.1.zip",
+        "checksum": "6ed692040b7def07453da3c902aa2769",
+        "timestamp": "2026-04-15T12:00:00Z"
+      },
+      {
+        "version": "1.0.6.0",
+        "changelog": "- Fix: Scrobbling now works - IHostedService for automatic startup",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm/releases/download/v1.0.6.0/jellyfin-plugin-lastfm_1.0.6.0.zip",
+        "checksum": "ca635d364c6de0126efeba111d426dbf",
+        "timestamp": "2026-04-15T10:00:00Z"
+      },
+      {
+        "version": "1.0.0.0",
+        "changelog": "- Initial release for Jellyfin 10.10.7 (net8.0)",
+        "targetAbi": "10.10.7.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm/releases/download/v1.0.0.0/jellyfin-plugin-lastfm_1.0.0.0.zip",
+        "checksum": "02a7251cb36a1a3a2f57a85762b4fa7a",
+        "timestamp": "2026-04-14T10:00:00Z"
+      }
+    ]
+  },
+  {
+    "guid": "b8e7f6a5-4d3c-2b1a-0f9e-8d7c6b5a4f3e",
+    "name": "ListenBrainz",
+    "description": "Scrobblea tu música a ListenBrainz desde Jellyfin. Actualiza el estado de ahora reproduciendo, envía scrobbles automáticamente y gestiona tus canciones favoritas.",
+    "overview": "Integra Jellyfin con ListenBrainz para scrobbling automático, notificaciones de ahora reproduciendo y feedback de canciones (love/hate). Usa la API de ListenBrainz con autenticación simple mediante token de usuario.",
+    "owner": "pepebarrascout",
+    "category": "Music",
+    "imageUrl": "https://raw.githubusercontent.com/pepebarrascout/jellyfin-plugin-listenbrainz/main/logo.png",
+    "versions": [
+      {
+        "version": "1.0.1.0",
+        "changelog": "- v1.0.1.0: Fix listen_type playing_now. Fix nombre del paquete ListenBrainz. Checksum correcto.",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-listenbrainz/releases/download/v1.0.1.0/jellyfin-plugin-listenbrainz_1.0.1.0.zip",
+        "checksum": "BCFBCF32CFA53D00ADD8B37AA0DE30A0",
+        "timestamp": "2026-04-15T18:00:00Z"
+      },
+      {
+        "version": "1.0.0.0",
+        "changelog": "- v1.0.0.0: Initial release for Jellyfin 10.10.7 (net8.0)",
+        "targetAbi": "10.10.7.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-listenbrainz/releases/download/v1.0.0.0/jellyfin-plugin-listenbrainz_1.0.0.0.zip",
+        "checksum": "9d66589ebc5d47b5ee8aa3a7884e0292",
+        "timestamp": "2026-04-14T10:00:00Z"
+      }
+    ]
+  },
+  {
+    "guid": "d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f90",
+    "name": "Podcasts",
+    "description": "Manage podcast subscriptions with automatic RSS feed updates, episode downloads, auto-delete after listening, and daily auto-playlist generation.",
+    "overview": "Subscribe to podcast RSS feeds, automatically download new episodes, manage auto-deletion of listened content, and generate a daily auto-playlist of unlistened episodes.",
+    "owner": "PepeBarrascout",
+    "category": "Music",
+    "imageUrl": "https://raw.githubusercontent.com/pepebarrascout/jellyfin-plugin-podcast/main/logo.png",
+    "versions": [
+      {
+        "version": "0.0.3.8",
+        "changelog": "- NEW: Compatible with Jellyfin 12.1 (also works with 12.0)\n- MIGRATED: Target framework from .NET 9.0 to .NET 10.0 (required by Jellyfin 12.x)\n- MIGRATED: Jellyfin package references from 10.11.11 to 12.1.0\n- FIXED: Replaced obsolete LinkedChild.Path with LinkedChild.ItemId only (Jellyfin 12 made playlists relational — LinkedChildren is now a DB table, Path is deprecated)\n- targetAbi updated from 10.11.0.0 to 12.0.0.0",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.8/jellyfin-plugin-podcasts_0.0.3.8.zip",
+        "checksum": "1A288BF4620FEDE251B681EEB025CED7",
+        "timestamp": "2026-09-16T20:42:04Z"
+      },
+      {
+        "version": "0.0.3.7",
+        "changelog": "- CHANGED: ID3 TPE2 (Album Artist) tag now writes 'Podcasts' (plural) instead of 'Podcast' (singular) for consistency with the folder name and playlist name\n- Applies to NEW downloads only — existing MP3s retain the previous 'Podcast' tag until manually re-tagged",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.7/jellyfin-plugin-podcasts_0.0.3.7.zip",
+        "checksum": "2ADC3B3CA4C033FBCC4DD2C595075E53",
+        "timestamp": "2026-09-09T01:20:14Z"
+      },
+      {
+        "version": "0.0.3.6",
+        "changelog": "- FIXED: 'Escanear biblioteca de podcasts' task now scans ONLY the podcast folder (the 'Podcasts' subfolder inside the music library) instead of the entire Jellyfin library\n- NEW: Uses ILibraryManager.FindByPath + Folder.ValidateChildren for a targeted recursive scan of just the podcast folder\n- NEW: Smart fallback — if the 'Podcasts' folder is not yet indexed by Jellyfin, scans only the parent music library to discover it (not the whole server)\n- NEW: Last-resort fallback to full library scan only if neither the podcast folder nor the music library can be located\n- Faster scan, does not touch movies/TV/other music libraries",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.6/jellyfin-plugin-podcasts_0.0.3.6.zip",
+        "checksum": "5285650309D523D1EC4FB7BE04FFD737",
+        "timestamp": "2026-09-05T18:58:38Z"
+      },
+      {
+        "version": "0.0.3.5",
+        "changelog": "- NEW: 4th scheduled task 'Escanear biblioteca de podcasts' - forces Jellyfin to scan the podcast folder for new files and add them to the database\n- Recommended: run this task after 'Update feeds' so new episodes appear in the library immediately\n- Uses ILibraryManager.ValidateMediaLibrary for a full library scan",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.5/jellyfin-plugin-podcasts_0.0.3.5.zip",
+        "checksum": "EB3012C5D95F6FF71C6C928ACEA9E2FE",
+        "timestamp": "2026-08-31T18:47:28Z"
+      },
+      {
+        "version": "0.0.3.4",
+        "changelog": "- Fixed: ROOT CAUSE of duplicate playlists — added SemaphoreSlim lock to prevent concurrent playlist generation (scheduler + manual trigger race condition)\n- Fixed: Playlist GUID now persisted to plain text file (playlist_id.txt) instead of PluginConfiguration XML (which was cached and not persisted immediately)\n- Fixed: Automatic migration from PluginConfiguration.PlaylistId to playlist_id.txt on first run\n- Fixed: Automatic cleanup of legacy duplicate playlists (Podcasts1, Podcasts11, etc.)\n- Pattern: Same architecture as jellyfin-smartlists-plugin — find by stored GUID, update in-place, never delete/recreate",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.4/jellyfin-plugin-podcasts_0.0.3.4.zip",
+        "checksum": "A32A9815F7F37BCEA07E56DA424BFA97",
+        "timestamp": "2026-07-08T17:57:00Z"
+      },
+      {
+        "version": "0.0.3.3",
+        "changelog": "- Fixed: Playlist image and RunningTime now update correctly on every generation (delete+recreate with confirmed deletion)\n- Fixed: No more duplicate playlists (Podcasts1, Podcasts11...) - polls DB until old playlist is confirmed deleted\n- Fixed: Duplicates cleaned up BEFORE main deletion to free all variant names\n- Fixed: Pinned Jellyfin packages to 10.11.11 for compatibility with latest stable\n- Fixed: Compatibility with Jellyfin 10.11.9+ (IUserManager.GetUsers())\n- Fixed: Auto-delete uses LastPlayedDate fallback for external clients\n- Fixed: Feed frequency respected by scheduled task (Weekly=Mondays, Monthly=1st)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.3/jellyfin-plugin-podcasts_0.0.3.3.zip",
+        "checksum": "4B5BCFC525B9C9019827457D3F1ECDA5",
+        "timestamp": "2026-06-21T05:30:00Z"
+      },
+      {
+        "version": "0.0.3.2",
+        "changelog": "- Fixed: Playlist no longer creates duplicates (Podcasts1, Podcasts11...) - uses in-place update instead of delete+recreate\n- Fixed: Playlist image regenerates on every update (removes old image, Jellyfin auto-generates composite)\n- Fixed: Pinned Jellyfin packages to 10.11.11 for compatibility with latest stable\n- Fixed: Compatibility with Jellyfin 10.11.9+ (IUserManager.GetUsers())\n- Fixed: Auto-delete uses LastPlayedDate fallback for external clients\n- Fixed: Feed frequency respected by scheduled task (Weekly=Mondays, Monthly=1st)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.2/jellyfin-plugin-podcasts_0.0.3.2.zip",
+        "checksum": "09F06340A861BF67BF9B7601478CB58C",
+        "timestamp": "2026-06-21T03:30:00Z"
+      },
+      {
+        "version": "0.0.3.1",
+        "changelog": "- Fixed: Pinned Jellyfin package versions to 10.11.10 for compatibility with Jellyfin 10.11.10\n- Fixed: Playlist image now refreshes on every generation (delete + recreate instead of in-place update)\n- Fixed: Compatibility with Jellyfin 10.11.9 (IUserManager.GetUsers())\n- Fixed: Auto-delete uses LastPlayedDate fallback for external clients\n- Fixed: Feed frequency respected by scheduled task (Weekly=Mondays, Monthly=1st)\n- Added: Direct link to scheduled tasks from plugin config page",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.1/jellyfin-plugin-podcasts_0.0.3.1.zip",
+        "checksum": "32C8864F0E66E0F190A32379C57AAEA7",
+        "timestamp": "2026-06-21T02:00:00Z"
+      },
+      {
+        "version": "0.0.3.0",
+        "changelog": "- Fixed: Playlist image now refreshes on every generation (delete + recreate instead of in-place update)\n- Fixed: Compatibility with Jellyfin 10.11.9 (IUserManager.GetUsers())\n- Fixed: Auto-delete uses LastPlayedDate fallback for external clients\n- Fixed: Feed frequency respected by scheduled task (Weekly=Mondays, Monthly=1st)\n- Added: Direct link to scheduled tasks from plugin config page",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.3.0/jellyfin-plugin-podcasts_0.0.3.0.zip",
+        "checksum": "F1425A2997B15E1785FB377BD819155B",
+        "timestamp": "2026-05-25T01:00:00Z"
+      },
+      {
+        "version": "0.0.2.9",
+        "changelog": "- Fixed: Compatibility with Jellyfin 10.11.9 (IUserManager.Users replaced by GetUsers())\n- Fixed: Playlist generation no longer crashes with MissingMethodException\n- Fixed: Auto-delete uses LastPlayedDate fallback for external clients\n- Fixed: Feed frequency respected by scheduled task (Weekly=Mondays, Monthly=1st)\n- Added: Direct link to scheduled tasks from plugin config page\n- Improved: Frequency labels updated (removed hardcoded times, proper accents)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.9/jellyfin-plugin-podcasts_0.0.2.9.zip",
+        "checksum": "1E7DD2AEB320E4CF159FFB36161DBC18",
+        "timestamp": "2026-05-25T00:00:00Z"
+      },
+      {
+        "version": "0.0.2.8",
+        "changelog": "- Fixed: Auto-delete now uses Jellyfin LastPlayedDate as fallback when internal ListenDate is not tracked\n- Fixed: Episodes played from external clients (phone, TV app) now correctly get a 2-day grace period based on LastPlayedDate\n- Fixed: Auto-delete ALWAYS enforces the 2-day window before deleting episodes\n- Fixed: Feed frequency now respected by scheduled task (Weekly = Mondays only, Monthly = 1st of month)\n- Fixed: Auto-delete scans actual podcast directories on disk instead of relying solely on episode-data.xml\n- Fixed: Episodes not found in Jellyfin library are logged and skipped (no silent failures)\n- Added: Direct link to scheduled tasks from plugin config page\n- Improved: All diagnostic messages use Information level (visible in normal logs)\n- Improved: Logs show listen date, scheduled delete date, and frequency skip reason for transparency",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.8/jellyfin-plugin-podcasts_0.0.2.8.zip",
+        "checksum": "DE8C5E81F10147BF15D3408BD16A77A3",
+        "timestamp": "2026-05-01T00:00:00Z"
+      },
+      {
+        "version": "0.0.2.7",
+        "changelog": "- Fixed: Scheduled Tasks (IScheduledTask) now properly implement IsHidden and IsEnabled for Jellyfin 10.11\n- Fixed: Plugin configuration page button now visible in Jellyfin dashboard (EnableInMainMenu set correctly)\n- NEW: Automatic cleanup of deleted-episodes.json at 23:50 daily via Timer (removes entries older than 6 months)\n- NEW: Public CleanupDeletedBlacklistPublic() method for external timer access\n- Scheduled Tasks appear in Dashboard > Scheduled Tasks > Podcasts (3 tasks)\n- Deleted episodes blacklist with 6-month retention in JSON file\n- Users configure task schedules from Jellyfin dashboard\n- PodcastScheduler handles playback monitoring + daily cleanup timer",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.7/jellyfin-plugin-podcasts_0.0.2.7.zip",
+        "checksum": "5A5B0F5A29336465FF119D35A7F34E73",
+        "timestamp": "2026-04-30T19:30:00Z"
+      },
+      {
+        "version": "0.0.2.6",
+        "changelog": "- NEW APPROACH: Playlist is now UPDATED in-place (LinkedChildren + UpdateToRepositoryAsync) instead of deleted and recreated, following jellyfin-smartlists-plugin pattern\n- Fixed: No more duplicate folders (Podcasts1, Podcasts11) since playlist is never deleted\n- Added: Automatic cleanup of legacy duplicate playlists after first update\n- Added: LinkedChild array with ItemId and Path for reliable item references\n- Refactored: Split into FindPlaylistByName() and CleanupDuplicatePlaylistsAsync() helper methods",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.6/jellyfin-plugin-podcasts_0.0.2.6.zip",
+        "checksum": "C423CE145E12F7C50F432D5340906CFD",
+        "timestamp": "2026-04-25T21:00:00Z"
+      },
+      {
+        "version": "0.0.2.4",
+        "changelog": "- Fixed: Playlist search now filters by BaseItemKind.Playlist (fast, only queries playlists)\n- Fixed: Playlist generation is synchronous again (fast with efficient query)\n- Fixed: Playlist 'Podcasts' is properly deleted before recreation\n- Fixed: IUserDataManager.GetUserData() uses User object (Jellyfin 10.11.x)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.4/jellyfin-plugin-podcasts_0.0.2.4.zip",
+        "checksum": "C5660EE12C8E6520D7BE91EF84B4ECDC",
+        "timestamp": "2026-04-25T18:00:00Z"
+      },
+      {
+        "version": "0.0.2.3",
+        "changelog": "- Fixed: Playlist generation now runs in background (fire-and-forget) to prevent HTTP timeout\n- Fixed: 'Generar playlist' button returns immediately with progress message\n- Fixed: Playlist overwrite uses LibraryManager.GetItemList() for reliable lookup\n- Fixed: IUserDataManager.GetUserData() uses User object (Jellyfin 10.11.x API)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.3/jellyfin-plugin-podcasts_0.0.2.3.zip",
+        "checksum": "4FE1BA49D8F557D17A460ECC665B8464",
+        "timestamp": "2026-04-25T17:00:00Z"
+      },
+      {
+        "version": "0.0.2.2",
+        "changelog": "- Fixed: Playlist 'Podcasts' is now properly overwritten instead of creating duplicates\n- Fixed: Playlist search uses LibraryManager.GetItemList() for reliable playlist lookup\n- Fixed: IUserDataManager.GetUserData() now uses User object (API change in Jellyfin 10.11.x)\n- Added: Diagnostic logging when existing playlist is not found during overwrite",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.2/jellyfin-plugin-podcasts_0.0.2.2.zip",
+        "checksum": "ED881C2D5B4286CCB5FBFF995F6400BF",
+        "timestamp": "2026-04-25T16:00:00Z"
+      },
+      {
+        "version": "0.0.2.1",
+        "changelog": "- Fixed: Listen detection now uses IUserDataManager (PlayCount/Played/PlaybackPosition) as primary method\n- Fixed: 'Borrar escuchados' button now reliably detects and deletes played episodes via UserData\n- Fixed: Auto-delete now uses Jellyfin UserData to detect listened episodes\n- Changed: Playlist renamed to 'Podcasts' (was 'Podcast Auto Playlist')\n- Changed: Playlist always overwrites existing (no duplicates)\n- Changed: Playlist only includes episodes that have NEVER been played\n- Fixed: Deleted episodes are NEVER re-downloaded (permanent blacklist)\n- Added: Support link - quechilero.com/plugin",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.1/jellyfin-plugin-podcasts_0.0.2.1.zip",
+        "checksum": "1F16FA44BF1F077FF6C961284DEA9044",
+        "timestamp": "2026-04-24T12:22:00Z"
+      },
+      {
+        "version": "0.0.2.0",
+        "changelog": "- Fixed: 'Actualizar Todos' now runs in background (fire-and-forget) to prevent HTTP timeout errors\n- Fixed: 'Borrar escuchados' button now uses direct addEventListener for reliable click handling\n- Fixed: Playlist always overwrites existing 'Podcast Auto Playlist' (never creates duplicates)\n- Fixed: episode-data.xml trimmed to latest 10 episodes per feed (prevents unbounded growth)\n- Added: OPML export - download all podcast subscriptions as .opml file\n- Added: OPML import - load podcasts from .opml file (duplicates are skipped)\n- Added: OPML import/export buttons below the schedule section\n- Added: Generic cover image (PortadaGenerica.jpg) embedded in plugin, used when podcast has no image\n- Changed: Cover image logic - downloads from RSS, falls back to generic cover if unavailable\n- Changed: DeleteListened endpoint is now synchronous (no async overhead)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.2.0/jellyfin-plugin-podcasts_0.0.2.0.zip",
+        "checksum": "24EC6102D91DA6DDDE195303F90B9C75",
+        "timestamp": "2026-04-24T12:00:00Z"
+      },
+      {
+        "version": "0.0.1.11",
+        "changelog": "- Fixed: 'Borrar escuchados' button now properly executes the delete action (moved to static HTML with event delegation)\n- Fixed: Removed old 'podcasts' to 'Podcasts' migration code (no longer needed)\n- Changed: ID3 tags are now cleaned thoroughly on download - all extra fields (comments, lyrics, etc.) removed\n- Changed: Only new downloads are tagged (no retroactive tagging of existing episodes)\n- Preserved: Embedded cover art is kept when writing ID3 tags",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.11/jellyfin-plugin-podcasts_0.0.1.11.zip",
+        "checksum": "9FC14440C934D50935A7ECEDDE17ED97",
+        "timestamp": "2026-04-24T11:30:00Z"
+      },
+      {
+        "version": "0.0.1.10",
+        "changelog": "- Changed: Podcast folder renamed to 'Podcasts' (auto-migrates from lowercase)\n- Changed: Episode naming format to YYYY-MM-DD-EpisodeName.ext\n- Added: ID3/metadata tags for all audio files (Title, Artist, Album Artist, Album, Year, Genre)\n- Added: Existing episodes auto-tagged on first feed update (one-time per feed)\n- Added: 2-second delay between metadata writes to prevent server overload\n- Fixed: Cover image (folder.jpg) only downloaded once, skipped if already exists\n- Fixed: Checksum uses MD5 for Jellyfin compatibility",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.10/jellyfin-plugin-podcasts_0.0.1.10.zip",
+        "checksum": "89D2142EF1FA8F791AAA23D446EE6430",
+        "timestamp": "2026-04-23T11:00:00Z"
+      },
+      {
+        "version": "0.0.1.9",
+        "changelog": "- Fixed: Playlist generation now uses IPlaylistManager API (database-backed) instead of raw XML file\n- Fixed: Playlist items are properly resolved through Jellyfin library (no more 'media source not found' error)\n- Fixed: Existing playlist is automatically deleted and recreated on each generation\n- Fixed: Checksum uses MD5 for Jellyfin compatibility",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.9/jellyfin-plugin-podcasts_0.0.1.9.zip",
+        "checksum": "3570ACB562F6B9EEB85183D3AD93FDEC",
+        "timestamp": "2026-04-23T10:30:00Z"
+      },
+      {
+        "version": "0.0.1.8",
+        "changelog": "- Fixed: Playlist XML now includes RunningTime (total seconds), Genres (Podcast), OwnerUserId, and Shares fields\n- Fixed: 'Borrar escuchados' button now has red background styling\n- Matches Jellyfin playlist XML format for proper library integration",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.8/jellyfin-plugin-podcasts_0.0.1.8.zip",
+        "checksum": "ECF8BCC2157D51FF63290FD23E7B77E6",
+        "timestamp": "2026-04-23T10:00:00Z"
+      },
+      {
+        "version": "0.0.1.7",
+        "changelog": "- Added: Manual 'Generar playlist' button\n- Added: 'Borrar escuchados' button at bottom of feed list\n- Fixed: Playlist generation now verifies that episode files exist on disk\n- Changed: Schedule times - feeds 00:30, playlist 01:00, auto-delete 01:30\n- Fixed: Spanish spelling with proper tildes (Programación, Generación, etc.)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.7/jellyfin-plugin-podcasts_0.0.1.7.zip",
+        "checksum": "4663A1691DCDFF25C03EF5892B899D11",
+        "timestamp": "2026-04-23T09:30:00Z"
+      },
+      {
+        "version": "0.0.1.6",
+        "changelog": "- Fixed: Frequency and auto-delete now display correct values in the feed list (enum string-to-number mapping)\n- Fixed: Enum values are properly converted when saving edits back to server",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.6/jellyfin-plugin-podcasts_0.0.1.6.zip",
+        "checksum": "1A87F3D6192929272AAA90A6A32D3720",
+        "timestamp": "2026-04-23T09:00:00Z"
+      },
+      {
+        "version": "0.0.1.5",
+        "changelog": "- Fixed: Frequency and auto-delete values now persist correctly when editing a podcast\n- Fixed: Select values set after form becomes visible (emby-select compatibility)",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.5/jellyfin-plugin-podcasts_0.0.1.5.zip",
+        "checksum": "8F2D7C3CD3531FD31B83437B51F88990",
+        "timestamp": "2026-04-23T08:30:00Z"
+      },
+      {
+        "version": "0.0.1.4",
+        "changelog": "- Fixed: Validation message simplified to 'Feed RSS valido. Listo para agregar.'",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.4/jellyfin-plugin-podcasts_0.0.1.4.zip",
+        "checksum": "C6CFE72F8A11E783F7437B5C38827CF9",
+        "timestamp": "2026-04-23T08:00:00Z"
+      },
+      {
+        "version": "0.0.1.3",
+        "changelog": "- Fixed: Native Jellyfin button styling with CSS fallback (raised + button-submit)\n- Fixed: Checkbox with Jellyfin accent-color styling\n- Fixed: Select dropdown with dark background (no white flash)\n- Fixed: Auto-delete now defaults to '2 dias despues de escuchar'\n- Fixed: Feed info shows 'Frecuencia:' and 'Borrado:' labels\n- Fixed: Only downloads latest 10 episodes per podcast\n- Improved: Explicit CSS for consistent cross-version styling",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.3/jellyfin-plugin-podcasts_0.0.1.3.zip",
+        "checksum": "32B0E658D5DAE1F5DFD9A8A8187C8633",
+        "timestamp": "2026-04-23T07:30:00Z"
+      },
+      {
+        "version": "0.0.1.2",
+        "changelog": "- Fixed: All buttons now use native Jellyfin styling (emby-button, raised, button-submit)\n- Fixed: Action buttons (Borrar, Actualizar, Actualizar Todos) now execute correctly\n- Fixed: Using native confirm() for reliable cross-version compatibility\n- Fixed: Event delegation for dynamically rendered feed list buttons\n- Fixed: API calls use fetch with X-Emby-Token for reliable authentication\n- Improved: Feed list uses Jellyfin listItem component for native look and feel",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.2/jellyfin-plugin-podcasts_0.0.1.2.zip",
+        "checksum": "9FA880894F1C84590E7ED3135E33EFBA",
+        "timestamp": "2026-04-23T07:00:00Z"
+      },
+      {
+        "version": "0.0.1.1",
+        "changelog": "- Fixed: Feed validation now uses server-side API (no CORS issues)\n- Fixed: All form buttons (Validar feed, Guardar, Cancelar) have consistent styling\n- Fixed: Auto-playlist checkbox is now interactive\n- Improved build process to ensure embedded resources are up to date",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.1/jellyfin-plugin-podcasts_0.0.1.1.zip",
+        "checksum": "5A24B20FCFA12B5FDEF530AF1D7AF350",
+        "timestamp": "2026-04-23T06:30:00Z"
+      },
+      {
+        "version": "0.0.1.0",
+        "changelog": "- Alpha release\n- RSS feed subscription management\n- Configurable update frequency (daily, weekly, monthly)\n- Auto-download of new episodes\n- Cover image extraction as folder.jpg\n- Auto-delete after 2 days of listening\n- Daily auto-playlist generation in Jellyfin XML format\n- Manual feed update buttons\n- Podcast detection via playback events",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-podcast/releases/download/v0.0.1.0/jellyfin-plugin-podcasts_0.0.1.0.zip",
+        "checksum": "EADC4D50A6ADF3DA241F640631DA3987",
+        "timestamp": "2026-04-22T22:00:00Z"
+      }
+    ]
+  },
+  {
+    "guid": "d6a5ecc8-0481-4ca4-b03a-1fb8595ef8e6",
+    "name": "Radio Online",
+    "description": "Automated online radio streaming plugin using Liquidsoap. Stream audio to Icecast servers with weekly playlist scheduling via Liquidsoap Telnet control.",
+    "overview": "Automated online radio streaming via Liquidsoap to Icecast servers with weekly playlist scheduling. Assign Jellyfin playlists to specific day/time slots. Requires a Liquidsoap Docker container running alongside Jellyfin.",
+    "owner": "PepeBarrascout",
+    "category": "Music",
+    "imageUrl": "https://raw.githubusercontent.com/pepebarrascout/jellyfin-plugin-radio-online/main/logo.png",
+    "versions": [
+      {
+        "version": "0.0.0.52",
+        "changelog": "COMPATIBILITY: Plugin now targets Jellyfin 12.1 (was 10.11.8)\nCHANGE: Target framework updated to .NET 10.0 (Jellyfin 12.x requirement)\nCHANGE: Jellyfin NuGet packages updated to 12.1.0\nCHANGE: targetAbi updated to 12.1.0.0\nNOTE: This version is NOT compatible with Jellyfin 10.x. Use v0.0.0.51 for Jellyfin 10.11.x",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.52/jellyfin-plugin-radio-online_0.0.0.52.zip",
+        "checksum": "2d380566bfddaed0847dffab809f418d",
+        "timestamp": "2026-09-17T12:00:00Z"
+      },
+      {
+        "version": "0.0.0.51",
+        "changelog": "NEW: NowPlaying JSON now includes itemId (Jellyfin's unique audio item ID) for direct database lookups\nCHANGE: itemId is placed right after isPlaying in the JSON response",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.51/jellyfin-plugin-radio-online_0.0.0.51.zip",
+        "checksum": "ea7540a525e715d94b670862f06b021d",
+        "timestamp": "2026-05-25T12:00:00Z"
+      },
+      {
+        "version": "0.0.0.50",
+        "changelog": "CRITICAL FIX: UTF-8 encoding in Telnet client — file paths with non-ASCII characters (é, ó, ñ, á, í, ú) are now sent correctly to Liquidsoap, fixing ~80% of silently skipped tracks\nFIX: LiquidsoapClient.cs now uses UTF-8 encoding for all Telnet communications instead of ASCII (ASCII corrupted accented characters into '?' causing 'Nonexistent file or ill-formed URI' errors)\nFIX: Telnet response reading also uses UTF-8 encoding for consistency\nNOTE: Recommended radio.liq changes to further reduce latency and track skipping: disable enable_autocue_metadata(), reduce crossfade to 1.5s, add normalize_url=false to http.get",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.50/jellyfin-plugin-radio-online_0.0.0.50.zip",
+        "checksum": "2c75364f32abd0c5ec3697ac8168a94f",
+        "timestamp": "2026-05-20T16:00:00Z"
+      },
+      {
+        "version": "0.0.0.49",
+        "changelog": "FIX: NowPlaying JSON year field now returned as quoted string (was unquoted integer causing JSON parse errors in external apps)\nFIX: Artwork proxy now actually resizes images based on maxWidth parameter using Jellyfin IImageProcessor (was serving original full-size image regardless of maxWidth value)\nFIX: Artwork proxy now uses async IImageProcessor.ProcessImage for proper image processing with SkiaSharp backend",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.49/jellyfin-plugin-radio-online_0.0.0.49.zip",
+        "checksum": "74a3b4a4ec59760e2dbfb9d43afd4e6aa29fd9b8774f1b654ea3ecbd59086f76",
+        "timestamp": "2026-05-19T14:00:00Z"
+      },
+      {
+        "version": "0.0.0.48",
+        "changelog": "CRITICAL FIX: Eliminated duplicate track reports — Jellyfin was reporting the same song 2-3 times (A,A,A,D,E,E,E pattern) while Icecast played correctly\nCRITICAL FIX: NowPlaying JSON and Android app now show the correct current track instead of stale data from duplicate on_track callbacks\nFIX: TrackChangeController made fully async — removed .GetAwaiter().GetResult() that caused thread pool starvation and request deadlocks\nFIX: Duplicate suppression — same track reported within 15 seconds is suppressed (handles Liquidsoap firing on_track multiple times per play)\nFIX: Removed backward drift correction — it caused duplicate track sends to Liquidsoap queue, making playlists longer than expected\nFIX: Schedule change now takes immediate priority — RefillQueueAsync aborts if schedule changed, preventing old playlist from continuing past its time slot\nIMPROVE: GetCurrentlyPlayingIndexAsync replaces VerifyPositionAsync — only detects stuck tracks, no longer modifies _nextTrackToSend counter",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.48/jellyfin-plugin-radio-online_0.0.0.48.zip",
+        "checksum": "8cf1d831df9b3db76f5c204f095981c5",
+        "timestamp": "2026-05-18T12:00:00Z"
+      },
+      {
+        "version": "0.0.0.47",
+        "changelog": "CRITICAL FIX: Liquidsoap stuck detection — when Liquidsoap stops advancing (codec error, corrupt file), the plugin no longer spams queue.append every 5 seconds in an infinite drift correction loop\nFIX: VerifyPositionAsync now returns current track index to RefillQueueAsync for stuck detection\nFIX: RefillQueueAsync pauses queue refill when Liquidsoap is stuck (same track across consecutive checks)\nFIX: Automatically resumes normal refill when Liquidsoap advances past the stuck track\nFIX: ResetState clears stuck state (_isStuck, _lastKnownCurrentIdx)",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.47/jellyfin-plugin-radio-online_0.0.0.47.zip",
+        "checksum": "34ce919c7c12667fbd282385b760ee3c",
+        "timestamp": "2026-05-17T16:49:07Z"
+      },
+      {
+        "version": "0.0.0.46",
+        "changelog": "FIX: Tracks silently dropped by Liquidsoap (codec issues, corrupt files) no longer cause premature playlist end — plugin now detects position drift every 5 seconds\nFIX: Position verification compares Liquidsoap reality (current_track + queue.length) vs plugin counter to detect skipped tracks\nFIX: Playlist now loops automatically when all tracks exhausted but schedule is still active — prevents dead air\nIMPROVE: VerifyPositionAsync runs as part of RefillQueueAsync cycle — minimal overhead (one extra Telnet query)\nIMPROVE: Detailed warning log when tracks are skipped with exact count of dropped tracks",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.46/jellyfin-plugin-radio-online_0.0.0.46.zip",
+        "checksum": "b3d7e6bca3a2986369f45b769ccb8ef9",
+        "timestamp": "2026-05-16T10:00:00Z"
+      },
+      {
+        "version": "0.0.0.45",
+        "changelog": "FIX: NowPlaying endpoint now returns isPlaying=false when radio stops — was stuck showing last track forever\nFIX: ResetState() now clears CurrentTrack so the endpoint correctly reflects when transmission has ended",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.45/jellyfin-plugin-radio-online_0.0.0.45.zip",
+        "checksum": "14bf0089d2a1557652172febe628a445",
+        "timestamp": "2026-05-16T09:00:00Z"
+      },
+      {
+        "version": "0.0.0.43",
+        "changelog": "NEW: Public artwork proxy endpoint at /RadioOnline/NowPlaying/Artwork — serves album art without authentication\nNEW: No Content-Disposition header — displays inline in browser instead of downloading\nNEW: Cache-Control: public, max-age=300 — browsers cache artwork for 5 minutes reducing server load\nFIX: artworkUrl in NowPlaying JSON now points to the proxy endpoint instead of Jellyfin's internal image endpoint\nIMPROVE: Content-Type detected from file extension (jpeg, png, gif, webp)\nIMPROVE: Returns 404 gracefully if no track is playing or album has no image",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.43/jellyfin-plugin-radio-online_0.0.0.43.zip",
+        "checksum": "cb6248887ebf17d69b7b79c1d45ac4cc",
+        "timestamp": "2026-05-16T08:00:00Z"
+      },
+      {
+        "version": "0.0.0.42",
+        "changelog": "FIX: NowPlaying artwork URL now uses album ID instead of song ID — songs don't have Primary images, the artwork lives on the parent album (folder.jpg)\nFIX: Eliminates \"does not have an image of type Primary\" error\nIMPROVE: NowPlayingInfo now stores AlbumId (falls back to ItemId if no album parent found)",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.42/jellyfin-plugin-radio-online_0.0.0.42.zip",
+        "checksum": "3350ffd1e8c7e947074bfa6bda294e52",
+        "timestamp": "2026-05-16T07:00:00Z"
+      },
+      {
+        "version": "0.0.0.41",
+        "changelog": "NEW: NowPlaying public endpoint at /RadioOnline/NowPlaying — returns current track metadata and album artwork URL as JSON for external apps and websites\nNEW: Optional maxWidth parameter (default 720) to control artwork resolution (e.g. ?maxWidth=100 for thumbnails)\nNEW: NowPlayingInfo class stores current track data (artist, title, album, year, duration, itemId)\nIMPROVE: RadioStateService now stores NowPlayingInfo with thread-safe locking\nIMPROVE: TrackChange stores metadata even when playback reporting is disabled\nIMPROVE: Base URL built dynamically from incoming request (works behind Cloudflare tunnel, reverse proxy, any domain)\nFIX: AssemblyVersion now correctly set in both Directory.Build.props and .csproj (was 0.0.0.15 due to stale duplicate project)",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.41/jellyfin-plugin-radio-online_0.0.0.41.zip",
+        "checksum": "13c878e62a4e3402029557bc8f6c143b",
+        "timestamp": "2026-05-16T06:30:00Z"
+      },
+      {
+        "version": "0.0.0.40",
+        "changelog": "NEW: NowPlaying public endpoint at /RadioOnline/NowPlaying — returns current track metadata and album artwork URL as JSON for external apps and websites\nNEW: Optional maxWidth parameter (default 720) to control artwork resolution (e.g. ?maxWidth=100 for thumbnails)\nNEW: NowPlayingInfo class stores current track data (artist, title, album, year, duration, itemId)\nIMPROVE: RadioStateService now stores NowPlayingInfo with thread-safe locking\nIMPROVE: TrackChange stores metadata even when playback reporting is disabled\nIMPROVE: Base URL built dynamically from incoming request (works behind Cloudflare tunnel, reverse proxy, any domain)\nNOTE: No domain or IP is hardcoded — the endpoint auto-detects the correct URL from the HTTP request",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.40/jellyfin-plugin-radio-online_0.0.0.40.zip",
+        "checksum": "05bc65fc23a87fbbac61b5ad5f48b148",
+        "timestamp": "2026-05-16T05:30:00Z"
+      },
+      {
+        "version": "0.0.0.39",
+        "changelog": "CRITICAL FIX: ResetState() was called AFTER loading playlist tracks, wiping _playlistTracks to empty array — the for loop ran 0 times and no tracks were ever sent to Liquidsoap\nFIX: Replaced ResetState() with _nextTrackToSend=0 to only reset the send index without destroying the loaded playlist\nROOT CAUSE: In v0.0.0.37, _playlistTracks was set at line 411, then ResetState() at line 431 cleared it — queue.append was never called",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.39/jellyfin-plugin-radio-online_0.0.0.39.zip",
+        "checksum": "1b8cbb414889f3462e633cfb9644a636",
+        "timestamp": "2026-05-16T04:45:00Z"
+      },
+      {
+        "version": "0.0.0.38",
+        "changelog": "FIX: Plugin stuck in Inactivo state after failed queue attempts — _currentScheduleKey was set before verifying tracks sent, causing the plugin to never retry loading the playlist\nFIX: _currentScheduleKey now only set on successful queue, cleared on failure so next cycle retries automatically\nIMPROVE: Error message now includes 'will retry on next cycle' for clarity",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.38/jellyfin-plugin-radio-online_0.0.0.38.zip",
+        "checksum": "05168a30edcbd25125a9a30fade27a08",
+        "timestamp": "2026-05-16T04:30:00Z"
+      },
+      {
+        "version": "0.0.0.37",
+        "changelog": "ARCHITECTURE: Push metadata — Liquidsoap now TELLS the plugin what's playing via HTTP POST, eliminating all sync issues\nNEW: TrackChangeController — HTTP endpoint at /RadioOnline/TrackChange receives track notifications from Liquidsoap\nREMOVE: All sync code eliminated — _currentTrackIndex, VerifyTrackSyncAsync, TryResumeCurrentPlaylistAsync, OnReconnected, queue.remaining\nSIMPLIFY: RadioStreamingHostedService now only manages buffer (keep queue.length >= 3) — no timing, no guessing\nSIMPLIFY: LiquidsoapClient — removed OnReconnected event, HadPreviousConnection, GetQueueRemainingAsync\nIMPROVE: Buffer refill based on queue.length instead of estimated timing — 100% reliable\nIMPROVE: Resume on restart still works via queue.current_track + queue.length query\nIMPORTANT: You MUST add on_track HTTP callback to radio.liq — see release notes\nIMPORTANT: Remove queue.remaining command from radio.liq (no longer needed)",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.37/jellyfin-plugin-radio-online_0.0.0.37.zip",
+        "checksum": "d7464956138dcf96e8dcc6ffde2116eb",
+        "timestamp": "2026-05-15T18:00:00Z"
+      },
+      {
+        "version": "0.0.0.36",
+        "changelog": "FIX: Plugin restart no longer resets playback to track 0 - on fresh start, queries what Liquidsoap is actually playing and resumes from that position (no audio interruption)\nFIX: _currentTrackIndex desync eliminated on restart - Liquidsoap keeps playing uninterrupted while the plugin repositions its tracking to match\nNEW: TryResumeCurrentPlaylistAsync - queries queue.current_track on startup, matches against playlist, and resumes tracking from the correct position\nNEW: queue.remaining Telnet command for accurate track timing on resume (calculates _currentTrackStartedAt from remaining time)\nNEW: GetQueueRemainingAsync in LiquidsoapClient\nIMPROVE: ResetTrackingState moved after resume check - state is only reset if resume fails\nIMPROVE: queue.length used on resume to estimate _lastQueuedTrackIndex, avoiding duplicate track queuing\nNOTE: Resume only works for non-shuffle playlists (shuffle order changes each restart)\nNOTE: You MUST add queue.remaining command to radio.liq - see release notes",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.36/jellyfin-plugin-radio-online_0.0.0.36.zip",
+        "checksum": "d79c05a671c92e544cf1ba0b025342fc",
+        "timestamp": "2026-05-15T16:00:00Z"
+      },
+      {
+        "version": "0.0.0.35",
+        "changelog": "FIX: Track desync after TCP reconnection - plugin now performs full bidirectional resync when Liquidsoap reconnects, correcting _currentTrackIndex to match actual playback\nFIX: Backward drift detection - plugin now detects and warns when Jellyfin shows a song ahead of what Liquidsoap is actually playing (index converges naturally)\nFIX: Reconnect resync bypasses 60-second throttle - runs immediately on reconnect event instead of waiting for next periodic check\nNEW: OnReconnected event in LiquidsoapClient fires when a new TCP connection replaces a dropped one (not on first connect)\nNEW: HadPreviousConnection property exposes whether a prior connection existed for meaningful reconnect detection\nIMPROVE: VerifyTrackSyncAsync now uses exact match (Ordinal) instead of case-insensitive match for track path comparison",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.35/jellyfin-plugin-radio-online_0.0.0.35.zip",
+        "checksum": "b7c38965a957f510a0b902ab025e6dd2",
+        "timestamp": "2026-05-15T14:00:00Z"
+      },
+      {
+        "version": "0.0.0.34",
+        "changelog": "FIX: Duplicate tracks and out-of-order playback - removed queue depth resync that incorrectly reset _lastQueuedTrackIndex backward during crossfade transitions\nFIX: queue.length now uses non-deprecated 'string()' function in radio.liq\nIMPROVE: Queue depth monitoring is now diagnostic-only (warning log) without modifying playback state\nNOTE: Update radio.liq with the corrected queue.length command from release assets",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.34/jellyfin-plugin-radio-online_0.0.0.34.zip",
+        "checksum": "e76df6b2e67153123cf9403e4e53f570",
+        "timestamp": "2026-05-14T13:00:00Z"
+      },
+      {
+        "version": "0.0.0.33",
+        "changelog": "FIX: Playback interruptions eliminated - proactive TCP reconnection every 2 minutes prevents stale half-open connections that caused silent command failures\nFIX: Queue depth verification - plugin now queries Liquidsoap's actual queue length before trusting local index, automatically resyncing when mismatch detected\nFIX: Read timeout reduced from 10s to 3s - stale commands no longer block the semaphore for extended periods\nIMPROVE: Buffer increased from 1 to 2 tracks ahead (3 initial tracks instead of 2) - tolerates multiple consecutive send failures before audio gap\nNEW: queue.length Telnet command for real-time queue monitoring (requires radio.liq update)\nNOTE: You MUST update your radio.liq to add the queue.length command - see release assets",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.33/jellyfin-plugin-radio-online_0.0.0.33.zip",
+        "checksum": "cccdcba2ba75adb33ff6f5d67c47d46f",
+        "timestamp": "2026-05-14T12:00:00Z"
+      },
+      {
+        "version": "0.0.0.32",
+        "changelog": "NEW: Multi-day schedule support - each program can now repeat on multiple days via checkboxes (L M X J V S D)\nNEW: Pause toggle per program - temporarily disable any schedule entry without deleting it\nNEW: Unique entry IDs for reliable schedule change detection across day boundaries\nIMPROVE: Schedule display shows compact day badges (active days highlighted in blue)\nIMPROVE: Backward compatible - old single-day entries still work without migration\nFIX: Overlap priority rule preserved - latest start time always wins",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.32/jellyfin-plugin-radio-online_0.0.0.32.zip",
+        "checksum": "930fb9225a3a22b0bc1b1a26fa83c7ad",
+        "timestamp": "2026-05-14T08:00:00Z"
+      },
+      {
+        "version": "0.0.0.29",
+        "changelog": "FIX: Track index only advances when the next track is confirmed queued in Liquidsoap - prevents gaps and offair interruptions\nFIX: Failed track sends are retried on the next cycle instead of being skipped\nFIX: Double playback reporting eliminated - each track is now reported exactly once using _lastReportedTrackIndex\nFIX: Buffer maintenance improved - AdvanceTrackAsync wrapped in try/catch to prevent cycle crashes on telnet errors\nFIX: Connection timeout resilience - if advance fails, the system recovers gracefully on the next 1-second cycle",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.29/jellyfin-plugin-radio-online_0.0.0.29.zip",
+        "checksum": "93c2e7e4b7e11eff3781622398b28a49",
+        "timestamp": "2026-05-11T05:15:00Z"
+      },
+      {
+        "version": "0.0.0.28",
+        "changelog": "FIX: Track advancement now works regardless of playback reporting setting - tracks are always sent one-by-one with buffer\nFIX: Playback reporting is optional and does not affect track delivery\nFIX: One-by-one mode sends all playlist tracks correctly (initial 2 + buffer as each track ends)",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.28/jellyfin-plugin-radio-online_0.0.0.28.zip",
+        "checksum": "64ffb7993cc92cecc9b04640c86c5e33",
+        "timestamp": "2026-05-11T04:00:00Z"
+      },
+      {
+        "version": "0.0.0.27",
+        "changelog": "NEW: Playback reporting to Jellyfin statistics - tracks are sent one-by-one with buffer for accurate PlayCount and LastPlayedDate updates, enabling smart playlists (most played, least played, recently played)\nNEW: Configurable option 'Report playback to Jellyfin statistics' in plugin settings\nNEW: Track duration detection from Jellyfin metadata for precise advance timing\nFIX: No longer requires queue.current_track telnet command (works with all Liquidsoap versions)\nFIX: Playback reporting filters out tracks without duration metadata\nIMPROVE: Tracks sent in small batches (2 initial + 1 buffer) instead of all at once - less telnet load, faster playlist transitions",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.27/jellyfin-plugin-radio-online_0.0.0.27.zip",
+        "checksum": "ad404a9c90680f26db8e4f118b12ad11",
+        "timestamp": "2026-05-11T03:30:00Z"
+      },
+      {
+        "version": "0.0.0.26",
+        "changelog": "NEW: Playback reporting to Jellyfin statistics - each track played on the radio now increments PlayCount and updates LastPlayedDate, enabling smart playlists (most played, least played, recently played, etc.)\nNEW: Configurable option 'Report playback to Jellyfin statistics' in plugin settings\nNEW: Liquidsoap queue.current_track telnet command for track monitoring\nFIX: DLL now correctly reports AssemblyVersion 0.0.0.26 (was loading 0.0.0.24 due to stale Directory.Build.props)\nFIX: Playback reporting filters out off-air audio and external radio streams\nIMPROVE: Path-to-item mapping preserved through shuffle for accurate reporting",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.26/jellyfin-plugin-radio-online_0.0.0.26.zip",
+        "checksum": "817844f3b9f070285e54131315955cda",
+        "timestamp": "2026-05-11T03:15:00Z"
+      },
+      {
+        "version": "0.0.0.25",
+        "changelog": "NEW: Playback reporting to Jellyfin statistics\nNEW: Configurable option in plugin settings\nNEW: Liquidsoap queue.current_track telnet command\nFIX: DLL AssemblyVersion fix",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.25/jellyfin-plugin-radio-online_0.0.0.25.zip",
+        "checksum": "3e8401f3f345a8823641fbec9d2bd91a",
+        "timestamp": "2026-05-11T00:00:00Z"
+      },
+      {
+        "version": "0.0.0.24",
+        "changelog": "FIX: Schedule now stops at exact programmed time - inverted clear+skip order (clear queue FIRST, then skip current track) so skip falls through to off-air instead of starting next queued track\nFIX: Second playlist now properly takes priority when schedules overlap - clears queue and immediately loads next schedule\nFIX: Times no longer drift/accumulate between schedules\nFIX: Exception handler now clears Liquidsoap queue to prevent orphaned tracks from playing after errors\nIMPROVE: Near-end polling checks every 1 second (instead of 5) when less than 30 seconds remain in schedule slot for precise timing",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.24/jellyfin-plugin-radio-online_0.0.0.24.zip",
+        "checksum": "3e98628c3850852cd7a18bafa5d33538",
+        "timestamp": "2026-04-29T12:00:00Z"
+      },
+      {
+        "version": "0.0.0.23",
+        "changelog": "FIX: Dark theme dropdown menus in scheduling section (option backgrounds match Jellyfin dark theme)\nFIX: Minute selector now shows all 60 minutes (00-59) instead of 5-minute increments\nFIX: Schedule now ends at exact programmed time - skips current track and triggers crossfade instead of waiting for song to finish\nFIX: Playlist switching at exact time with crossfade transition (skip + clear + load)\nIMPROVE: Remaining time check prevents songs from playing past schedule end",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.23/jellyfin-plugin-radio-online_0.0.0.23.zip",
+        "checksum": "eb9204e0a8986d714b7288f2049a29e2",
+        "timestamp": "2026-04-29T00:00:00Z"
+      },
+      {
+        "version": "0.0.0.22",
+        "changelog": "FIX: Telnet Broken pipe - SendCommandAsync now retries once after reconnecting on IOException\nFIX: Schedule not followed - now tracks full schedule key (day+time+playlist) instead of just playlist ID\nFIX: Queue clear now retries up to 3 times on failure to ensure schedule transitions work reliably\nFIX: Status endpoint shows correct telnet state after reconnect",
+        "targetAbi": "10.11.8.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online/releases/download/v0.0.0.22/jellyfin-plugin-radio-online_0.0.0.22.zip",
+        "checksum": "f0ee7f3af74480ffbca254adc8620bc8",
+        "timestamp": "2026-04-28T05:30:00Z"
+      }
+    ]
+  },
+  {
+    "guid": "a8c3b2e1-7f4d-4e6a-9b1c-2d5e8f0a1b3c",
+    "name": "Jellyfin YouTube Plugin",
+    "description": "Reproduce videos de YouTube como Series en Jellyfin sin descargarlos. Usa archivos .strm + proxy local + yt-dlp.",
+    "overview": "Agrega canales de YouTube y reproduce sus videos directamente como Series en Jellyfin. Sin descarga al disco. No requiere API key de YouTube - usa yt-dlp para todos los metadatos. Base de datos SQLite aislada de la BD principal de Jellyfin. Polling configurable por canal y políticas de retención.",
+    "owner": "pepebarrascout",
+    "category": "Metadata",
+    "imageUrl": "https://raw.githubusercontent.com/pepebarrascout/jellyfin-plugin-youtube/main/logo.png",
+    "versions": [
+      {
+        "version": "0.0.0.5",
+        "changelog": "- Compatibilidad con Jellyfin 12.1 (.NET 10)\n- Actualizadas referencias a Jellyfin.Controller/Model 12.1.0\n- Microsoft.Data.Sqlite actualizado a versión compatible con .NET 10\n- Todas las demás funciones siguen igual que v0.0.0.4",
+        "targetAbi": "12.1.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-youtube/releases/download/v0.0.0.5/jellyfin-plugin-youtube_0.0.0.5.zip",
+        "checksum": "10272d915f3879adfee052e7329a3da3",
+        "timestamp": "2026-09-16T00:00:00Z"
+      },
+      {
+        "version": "0.0.0.4",
+        "changelog": "- Eliminada dependencia de YoutubeExplode (plugin reducido de 8.3MB a 140KB)\n- Fix InvalidCastException en SQLiteStore.Initialize (PRAGMA user_version devuelve string)\n- Todos los textos, logs y mensajes traducidos al español\n- Feedback visual completo en botones (loading + toasts de éxito/error)\n- Verificación de yt-dlp al iniciar el plugin (log informativo)\n- Compatible con Jellyfin 10.11.x",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-youtube/releases/download/v0.0.0.4/jellyfin-plugin-youtube_0.0.0.4.zip",
+        "checksum": "7796a87e537d50a6f5c7ab95ac4de849",
+        "timestamp": "2026-09-15T22:30:00Z"
+      },
+      {
+        "version": "0.0.0.3",
+        "changelog": "- FIX: plugin now loads correctly - NuGet dependencies bundled in the zip\n- Removed YouTube Data API v3 dependency - uses yt-dlp --flat-playlist for channel metadata\n- Removed Quartz - uses System.Threading.Timer\n- Removed Polly - simple try/catch",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-youtube/releases/download/v0.0.0.3/jellyfin-plugin-youtube_0.0.0.3.zip",
+        "checksum": "e9ef51d1eebb2ec7296f30eb774e2dbc",
+        "timestamp": "2026-09-15T21:30:00Z"
+      },
+      {
+        "version": "0.0.0.2",
+        "changelog": "- Configuration page functional via Jellyfin built-in endpoints\n- YoutubeExplode as primary resolver\n- yt-dlp fallback\n- WatchedTracker subscribed to PlaybackStopped",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-youtube/releases/download/v0.0.0.2/jellyfin-plugin-youtube_0.0.0.2.zip",
+        "checksum": "134bc91b4f120a3bc92ea9608e2fb070",
+        "timestamp": "2026-09-15T20:30:00Z"
+      },
+      {
+        "version": "0.0.0.1",
+        "changelog": "- Initial scaffold",
+        "targetAbi": "10.11.0.0",
+        "sourceUrl": "https://github.com/pepebarrascout/jellyfin-plugin-youtube/releases/download/v0.0.0.1/jellyfin-plugin-youtube_0.0.0.1.zip",
+        "checksum": "fcc3b114251c1d0cd30e5f7eecc6e51d",
+        "timestamp": "2026-09-15T19:14:00Z"
+      }
+    ]
+  }
+]
