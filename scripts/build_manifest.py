@@ -43,26 +43,38 @@ PLUGINS: list[dict] = [
     {
         "repo": "jellyfin-plugin-estadisticas",
         "github_url": "https://github.com/pepebarrascout/jellyfin-plugin-estadisticas",
+        "display_title": "Estadísticas",
+        "spanish_description": "Plugin de estadísticas de música para Jellyfin. Registra reproducciones de audio en una base de datos SQLite propia (sin tocar la BD de Jellyfin) y genera informes Top 50 y Bottom 50 por canción, artista, álbum y género en múltiples ventanas temporales. Permite crear listas de reproducción y programar su publicación.",
     },
     {
         "repo": "jellyfin-plugin-lastfm",
         "github_url": "https://github.com/pepebarrascout/jellyfin-plugin-lastfm",
+        "display_title": "Last.fm",
+        "spanish_description": "Scrobblea tu música a Last.fm, actualiza el estado de reproducción actual y marca tus canciones favoritas o rechazadas directamente desde Jellyfin.",
     },
     {
         "repo": "jellyfin-plugin-listenbrainz",
         "github_url": "https://github.com/pepebarrascout/jellyfin-plugin-listenbrainz",
+        "display_title": "ListenBrainz",
+        "spanish_description": "Scrobblea tu música a ListenBrainz desde Jellyfin. Actualiza el estado de ahora reproduciendo, envía scrobbles automáticamente y gestiona tus canciones favoritas (love/hate) con autenticación simple mediante token de usuario.",
     },
     {
         "repo": "jellyfin-plugin-podcast",
         "github_url": "https://github.com/pepebarrascout/jellyfin-plugin-podcast",
+        "display_title": "Podcasts",
+        "spanish_description": "Gestiona suscripciones a podcasts con actualizaciones automáticas del feed RSS, descarga automática de episodios, eliminación tras la escucha y generación diaria de listas de reproducción con episodios no escuchados.",
     },
     {
         "repo": "jellyfin-plugin-radio-online",
         "github_url": "https://github.com/pepebarrascout/jellyfin-plugin-radio-online",
+        "display_title": "Radio Online",
+        "spanish_description": "Plugin de streaming automatizado de radio en línea mediante Liquidsoap. Transmite audio a servidores Icecast con programación semanal de listas de reproducción a través del control por Telnet de Liquidsoap.",
     },
     {
         "repo": "jellyfin-plugin-youtube",
         "github_url": "https://github.com/pepebarrascout/jellyfin-plugin-youtube",
+        "display_title": "YouTube",
+        "spanish_description": "Reproduce videos de YouTube como Series en Jellyfin sin descargarlos. Usa archivos .strm + proxy local + yt-dlp. Sin necesidad de API key de YouTube.",
     },
 ]
 
@@ -218,6 +230,12 @@ p { margin: .4em 0; }
 .badge.j12 { color: var(--accent); border-color: var(--accent); }
 .badge.j10 { color: var(--warn); border-color: var(--warn); }
 .badge.cat { color: #fff; background: #2a2d33; border-color: #2a2d33; }
+.compat {
+  margin: .35em 0;
+  font-size: .85em;
+  color: var(--muted);
+}
+.compat b { color: #fff; font-weight: 600; }
 .versions {
   margin: 6px 0 0 0; padding: 0; list-style: none;
   font-size: .82em; color: var(--muted);
@@ -258,27 +276,54 @@ def _fmt_date(ts: str) -> str:
     return dt.strftime("%d-%m-%Y")
 
 
-def _badges_for(plugin_obj: dict) -> str:
-    """Genera badges de compatibilidad y categoría."""
-    versions = plugin_obj.get("versions", [])
-    abis = {v.get("targetAbi", "") for v in versions}
-    has_j12 = any(a.startswith("12.") for a in abis)
-    has_j10 = any(a.startswith("10.") for a in abis)
+def _fmt_abi(abi: str) -> str:
+    """Formatea targetAbi a algo legible.
+    Ejemplos:
+      "12.1.0.0"  -> "Jellyfin 12.1"
+      "10.11.0.0" -> "Jellyfin 10.11"
+      "10.11.8.0" -> "Jellyfin 10.11.8"
+    """
+    if not abi:
+        return "Jellyfin"
+    parts = abi.split(".")
+    while parts and parts[-1] == "0":
+        parts.pop()
+    if not parts:
+        return "Jellyfin"
+    return "Jellyfin " + ".".join(parts)
+
+
+def _category_badge(plugin_obj: dict) -> str:
+    """Devuelve solo el badge de categoría (Music, Metadata, etc.)."""
     cat = plugin_obj.get("category", "")
-    parts = []
-    if has_j12:
-        parts.append('<span class="badge j12">Jellyfin 12.x</span>')
-    if has_j10:
-        parts.append('<span class="badge j10">Jellyfin 10.11</span>')
-    if cat:
-        parts.append(f'<span class="badge cat">{_esc(cat)}</span>')
-    if parts:
-        return f'<div class="badges">{"".join(parts)}</div>'
-    return ""
+    if not cat:
+        return ""
+    # Traducimos las categorías comunes al español
+    cat_translations = {
+        "Music": "Música",
+        "Metadata": "Metadata",
+        "General": "General",
+        "Channels": "Canales",
+        "Live TV": "TV en vivo",
+    }
+    cat_es = cat_translations.get(cat, cat)
+    return f'<div class="badges"><span class="badge cat">{_esc(cat_es)}</span></div>'
 
 
-def _versions_list(plugin_obj: dict, max_v: int = 5) -> str:
-    """Lista las últimas N versiones con versión, targetAbi, fecha y changelog."""
+def _compat_line(plugin_obj: dict) -> str:
+    """Devuelve la línea 'Compatible con Jellyfin X.Y' basada en la última versión."""
+    versions = plugin_obj.get("versions", [])
+    if not versions:
+        return ""
+    latest = versions[0]
+    abi = latest.get("targetAbi", "")
+    if not abi:
+        return ""
+    return f'<div class="compat">Compatible con <b>{_esc(_fmt_abi(abi))}</b></div>'
+
+
+def _versions_list(plugin_obj: dict, max_v: int = 1) -> str:
+    """Lista las últimas N versiones (por defecto solo 1) con versión, targetAbi, fecha y changelog."""
     versions = plugin_obj.get("versions", [])[:max_v]
     if not versions:
         return ""
@@ -299,10 +344,10 @@ def _versions_list(plugin_obj: dict, max_v: int = 5) -> str:
             f'<span class="cl">{_esc(cl)}</span>'
             "</li>"
         )
-    more = len(plugin_obj.get("versions", [])) - max_v
+    total_versions = len(plugin_obj.get("versions", []))
     more_line = ""
-    if more > 0:
-        more_line = f'<li style="border-top:1px dashed var(--border);color:var(--muted);font-style:italic;">y {more} versiones más en el repositorio</li>'
+    if total_versions > max_v:
+        more_line = f'<li style="border-top:1px dashed var(--border);color:var(--muted);font-style:italic;">Hay {total_versions - max_v} versión(es) anterior(es) en el repositorio.</li>'
     return f'<ul class="versions">{"".join(items)}{more_line}</ul>'
 
 
@@ -310,71 +355,69 @@ def build_html(combined: list[dict], manifest_url: str) -> str:
     plugin_cards = []
     for p in combined:
         name = p.get("name", "")
-        desc = p.get("description", "") or p.get("overview", "")
-        image = p.get("imageUrl", "")
-        repo_url = f"https://github.com/{OWNER}/"
-        # intentar inferir repo por guid no es fiable; usamos el link genérico
-        # y dejamos que el usuario haga click en el badge de GitHub
-        # (lo mejoramos: si guardamos el repo en PLUGINS lo pasamos como _repo_url)
-        # Pero el combined no tiene ese campo; lo añadimos aquí desde el mapeo.
-        # En su lugar, usamos el github_url que ya pasamos en PLUGINS:
-        # Hacemos un lookup por name.
-        # Simplificación: si el plugin es del owner, link = github.com/owner/<repo>
-        # pero el nombre del repo no siempre coincide con el del plugin.
-        # Lo resolvemos desde un mapeo name->repo basado en PLUGINS.
-        # (Esto se hace en build_html_wrapper)
-        plugin_cards.append((p, name, desc, image))
-
-    # mapeo name -> github_url
-    name_to_url = {p["repo"]: p["github_url"] for p in PLUGINS}
-
-    cards_html = []
-    for p, name, desc, image in plugin_cards:
-        # buscamos github_url por coincidencia de name con "Jellyfin <X> Plugin" / "X"
+        # intentamos resolver overrides (display_title, spanish_description)
+        # buscando el plugin en PLUGINS por coincidencia con el repo
         repo_key = None
-        # heurística simple: el repo que contiene el nombre del plugin en slug
-        slug_guess = name.lower().replace(" ", "-").replace(".", "")
-        for r in name_to_url:
-            if r.lower().endswith(slug_guess) or slug_guess in r.lower():
-                repo_key = r
+        for plugin_meta in PLUGINS:
+            # heurística: el nombre del plugin debería ser subset del nombre del repo
+            # o el repo debería contener el slug del nombre
+            slug = name.lower().replace(" ", "-").replace(".", "")
+            if slug in plugin_meta["repo"].lower() or plugin_meta["repo"].lower().endswith(slug):
+                repo_key = plugin_meta["repo"]
                 break
         if not repo_key:
-            # fallback: por orden de PLUGINS
+            # fallback por orden
             idx = combined.index(p)
             if idx < len(PLUGINS):
                 repo_key = PLUGINS[idx]["repo"]
-        gh_url = name_to_url.get(repo_key, f"https://github.com/{OWNER}")
+        plugin_meta = next((x for x in PLUGINS if x["repo"] == repo_key), {})
+        # Título: "Jellyfin Plugin <DisplayTitle>"
+        display_title = plugin_meta.get("display_title", name)
+        title = f"Jellyfin Plugin {display_title}"
+        # Descripción: usamos la descripción en español del override si existe,
+        # si no, usamos description/overview del manifest
+        desc = plugin_meta.get("spanish_description") or p.get("description", "") or p.get("overview", "")
+        image = p.get("imageUrl", "")
+        gh_url = plugin_meta.get("github_url", f"https://github.com/{OWNER}/{repo_key or ''}")
 
+        # Layout por card (en orden):
+        #   1. Título (h3)
+        #   2. Descripción (p)
+        #   3. Compatible con Jellyfin X.Y
+        #   4. Etiqueta de categoría (Música, Metadata, etc.)
+        #   5. Enlace al repositorio en GitHub
+        #   6. Únicamente la versión más reciente
         card = (
             '<a class="plugin" href="' + _esc(gh_url) + '">'
             f'<img src="{_esc(image)}" alt="" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22><rect width=%2216%22 height=%229%22 fill=%22%230b0c0e%22/><text x=%228%22 y=%225%22 font-size=%221%22 fill=%22%239aa0a6%22 text-anchor=%22middle%22>sin logo</text></svg>\'; this.onerror=null;">'
             "<div>"
-            f"<h3>{_esc(name)}</h3>"
+            f"<h3>{_esc(title)}</h3>"
             f"<p>{_esc(desc)}</p>"
-            f"{_badges_for(p)}"
-            f'<span class="gh-link">github.com/{OWNER}/{_esc(repo_key or "")}</span>'
-            f"{_versions_list(p)}"
+            f"{_compat_line(p)}"
+            f"{_category_badge(p)}"
+            f'<span class="gh-link">{_esc(gh_url.replace("https://", ""))}</span>'
+            f"{_versions_list(p, max_v=1)}"
             "</div>"
             "</a>"
         )
-        cards_html.append(card)
+        plugin_cards.append(card)
 
-    plugins_html = "\n".join(cards_html)
+    plugins_html = "\n".join(plugin_cards)
 
     return f"""<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pepebarrascout · Plugins de Jellyfin</title>
-<meta name="description" content="Un único repositorio para todos los plugins de Jellyfin de pepebarrascout: estadísticas, Last.fm, ListenBrainz, podcasts, radio online y YouTube.">
+<title>Pepe Barrascout · Plugins para Jellyfin</title>
+<meta name="description" content="Repositorio único con todos los plugins de Jellyfin de Pepe Barrascout: Estadísticas, Last.fm, ListenBrainz, Podcasts, Radio Online y YouTube.">
 <style>
 {CSS}
 </style>
 </head>
 <body>
 <main>
-  <h1>pepebarrascout <span>· plugins de Jellyfin</span></h1>
+  <h1>Pepe Barrascout <span>· Plugins para Jellyfin</span></h1>
   <p class="muted">Un único repositorio para todos mis plugins de Jellyfin. Añádelo una vez y cada plugin,
   con todas sus actualizaciones, aparecerá automáticamente en el catálogo de Jellyfin.</p>
 
@@ -460,6 +503,7 @@ def build_html(combined: list[dict], manifest_url: str) -> str:
     }}
   }})();
 </script>
+<script defer src="https://stats.blogsdeguatemala.com/script.js" data-website-id="b844201b-c1e8-4e88-9b67-20a6109583ce"></script>
 </body>
 </html>
 """
