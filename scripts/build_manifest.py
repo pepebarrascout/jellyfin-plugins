@@ -209,23 +209,18 @@ p { margin: .4em 0; }
 }
 .url button:hover { filter: brightness(1.1); }
 .plugin {
-  display: block;
+  display: flex; gap: 16px; align-items: flex-start;
   background: var(--card); border: 1px solid var(--border);
-  border-radius: 8px; padding: 0; margin: 10px 0;
+  border-radius: 8px; padding: 12px; margin: 10px 0;
   text-decoration: none; color: inherit;
-  overflow: hidden;
 }
 .plugin:hover { border-color: var(--accent); }
-.plugin-header {
-  display: flex; gap: 12px; align-items: center;
-  padding: 12px;
-}
-.plugin-header img {
-  width: 96px; height: 54px; border-radius: 4px;
+.plugin img {
+  width: 160px; aspect-ratio: 16/9; border-radius: 6px;
   flex: 0 0 auto; background: #000; object-fit: cover;
 }
-.plugin-header h3 { margin: 0; font-size: 1.1em; color: #fff; }
-.plugin-body { padding: 0 12px 12px 12px; }
+.plugin-content { flex: 1 1 auto; min-width: 0; }
+.plugin h3 { margin: 0 0 .2em; font-size: 1.05em; color: #fff; }
 .plugin p { color: var(--muted); font-size: .93em; margin: .2em 0; }
 .plugin .badges { margin-top: .35em; display: flex; flex-wrap: wrap; gap: 6px; }
 .badge {
@@ -261,8 +256,8 @@ a { color: var(--accent); }
 @media (max-width: 560px) {
   .url { flex-wrap: wrap; }
   .url b { flex-basis: 100%; }
-  .plugin-header { gap: 8px; }
-  .plugin-header img { width: 72px; height: 40px; }
+  .plugin { flex-direction: column; align-items: stretch; }
+  .plugin img { width: 100%; }
 }
 """
 
@@ -418,13 +413,9 @@ def build_html(combined: list[dict], manifest_url: str) -> str:
 
         card = (
             '<a class="plugin" href="' + _esc(gh_url) + '">'
-            # Header: imagen + título al lado
-            '<div class="plugin-header">'
             f'<img src="{_esc(image)}" alt="" onerror="this.src=\'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22><rect width=%2216%22 height=%229%22 fill=%22%230b0c0e%22/><text x=%228%22 y=%225%22 font-size=%221%22 fill=%22%239aa0a6%22 text-anchor=%22middle%22>sin logo</text></svg>\'; this.onerror=null;">'
+            "<div class=\"plugin-content\">"
             f"<h3>{_esc(title)}</h3>"
-            "</div>"
-            # Body
-            '<div class="plugin-body">'
             f"<p>{_esc(desc)}</p>"
             f"{_compat_line(p)}"
             f"{badges_html}"
